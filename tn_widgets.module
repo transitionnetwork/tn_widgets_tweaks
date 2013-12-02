@@ -1,0 +1,23 @@
+<?php
+/**
+ * @file
+ * tn_widgets.module - UI and behaviour alterations for Widgetizer module.
+ *
+ * By Jim Kirkpatrick - i-jk.co.uk
+ *
+ * Sponsored by Transition Network - transitionnetwork.org
+ *
+ * LICENCE
+ *
+ * DESCRIPTION
+ */
+
+/**
+ * Implements hook_custom_theme().
+ */
+function tn_widgets_custom_theme() {
+  // Ensure all /tn-widgets/* pages use the appropriate theme.
+  if (arg(0) == 'tn-widgets') {
+    return 'seven';
+  }
+}
