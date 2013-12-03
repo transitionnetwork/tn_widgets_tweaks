@@ -18,6 +18,12 @@
 function tn_widgets_custom_theme() {
   // Ensure all /tn-widgets/* pages use the appropriate theme.
   if (arg(0) == 'tn-widgets') {
-    return 'seven';
+    // @Todo use a variable ideally.
+    return 'bartik';
   }
+}
+
+function tn_widgets_form_alter(&$form, &$form_state, $form_id) {
+  // Only act if this is a workflow-enabled form.
+  //if ($form)
 }
