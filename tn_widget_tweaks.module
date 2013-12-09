@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * tn_widget_tweaks.module - UI and behaviour alterations for Widgetizer module.
+ * tn_widgets_tweaks.module - UI and behaviour alterations for Widgetizer module.
  *
  * By Jim Kirkpatrick - i-jk.co.uk
  *
@@ -15,7 +15,7 @@
 /**
  * Implements hook_custom_theme().
  */
-function tn_widget_tweaks_custom_theme() {
+function tn_widgets_tweaks_custom_theme() {
   // Ensure all /tn-widgets/* pages use the appropriate theme.
   if (arg(0) == 'tn-widgets') {
     // Hide admin nmenu if present, too.
@@ -23,11 +23,11 @@ function tn_widget_tweaks_custom_theme() {
       admin_menu_suppress();
     }
     // Set our theme.
-    return 'tn_widget_tweaks_theme';
+    return 'tn_widgets_theme';
   }
 }
 
-function tn_widget_tweaks_form_alter(&$form, &$form_state, $form_id) {
+function tn_widgets_tweaks_form_alter(&$form, &$form_state, $form_id) {
   // Only act if this is a workflow-enabled form.
   //if ($form)
 }
