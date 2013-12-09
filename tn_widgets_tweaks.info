@@ -1,6 +1,6 @@
-name = Transition Network Widget Tweaks
+name = Transition Network Widgets Tweaks
 description = UI and behaviour alterations for use with the Widgetizer module.
 package = Transition Network
 core = 7.x
-files[] = tn_widget_tweaks.module
+files[] = tn_widgets_tweaks.module
 
