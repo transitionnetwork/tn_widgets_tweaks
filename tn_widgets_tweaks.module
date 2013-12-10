@@ -27,7 +27,97 @@ function tn_widgets_tweaks_custom_theme() {
   }
 }
 
+/**
+ * Implements hook_form_alter().
+ */
 function tn_widgets_tweaks_form_alter(&$form, &$form_state, $form_id) {
   // Only act if this is a workflow-enabled form.
-  //if ($form)
+  $active_workflow = &widgetizer_workflow_current_plugin_get();
+  if (is_null($active_workflow) || !in_array($form_id, $active_workflow['active form'])) {
+    return;
+  }
+  // Get extra contexts
+
+  $contexts = panels_get_current_page_display();
+  $contexts = $contexts->context;
+  // Handle alterations for each workflow as necessary
+  switch ($active_workflow['name']) {
+    case 'loginregister_submit_thanks':
+      tn_widgets_tweaks_login_register_thanks_node_form($form, $form_state, $active_workflow, $contexts);
+      break;
+  }
+
+}
+
+/**
+ * Handles 'loginregister_submit_thanks' workflow form node alterations.
+ */
+function tn_widgets_tweaks_login_register_thanks_node_form(&$form, &$form_state, &$active_workflow, $contexts) {
+  // Set point of contact to current user.
+  global $user;
+  $form['field_primary_contact'][LANGUAGE_NONE][0]['target_id']['#default_value'] = "$user->name ($user->uid)";
+  // Make street address non-mandatory.
+  $form['field_location'][LANGUAGE_NONE][0]['street_block']['thoroughfare']['#required'] = FALSE;
+
+  // Set country to that of the context passed in -- unbelievably convoluted!
+  // Might be a better way, this came from http://drupal.stackexchange.com/a/40831/4543
+  // Adapted from addressfield.module/addressfield_field_widget_form().
+  $element =& $form['field_location'][LANGUAGE_NONE][0];
+  $delta = $element['#delta'];
+  $langcode = $element['#language'];
+  $items = array($delta => $element['#address']);
+  $element_key = $element['element_key']['#value'];
+  $field = $form_state['field']['field_location'][LANGUAGE_NONE]['field'];
+  $instance = $form_state['field']['field_location'][LANGUAGE_NONE]['instance'];
+  $settings = $instance['widget']['settings'];
+
+  // Get the default address used to build the widget form elements, looking
+  // first in the form state, then in the stored value for the field, and then
+  // in the default values of the instance.
+  $address = array();
+  if (!empty($form_state['addressfield'][$element_key])) {
+    // Use the value from the form_state if available.
+    $address = $form_state['addressfield'][$element_key];
+  }
+  elseif (!empty($items[$delta]['country'])) {
+    // Else use the saved value for the field.
+    $address = $items[$delta];
+  }
+  else {
+    // Otherwise use the instance default.
+    $address = (array) $instance['default_value'][0];
+  }
+
+  // Merge in default values to provide a value for every expected array key.
+  $countries = _addressfield_country_options_list($field, $instance);
+  $address += addressfield_default_values($countries);
+
+  // Set our default country.
+  if ($address['country'] != $contexts['argument_country_code_1']->data->iso2) {
+    $address['country'] = $contexts['argument_country_code_1']->data->iso2;
+    $address['administrative_area'] = '';
+  }
+
+  // Add the form elements for the standard widget, which includes a country
+  // select list at the top that reloads the available address elements when the
+  // country is changed.
+  if ($instance['widget']['type'] == 'addressfield_standard') {
+    // Generate the address form.
+    $context = array(
+      'mode' => 'form',
+      'field' => $field,
+      'instance' => $instance,
+      'langcode' => $langcode,
+      'delta' => $delta,
+    );
+    $element = array_merge($element, addressfield_generate($address, $settings['format_handlers'], $context));
+
+    // Mark the form element as required if necessary.
+    $element['#required'] = $delta == 0 && $instance['required'];
+  }
+
+  // Hide elements.
+  $form['field_description']['#access'] = FALSE;
+  $form['field_primary_contact']['#access'] = FALSE;
+  $form['language']['#access'] = FALSE;
 }
