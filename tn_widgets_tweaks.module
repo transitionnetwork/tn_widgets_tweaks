@@ -56,9 +56,8 @@ function tn_widgets_tweaks_login_register_thanks_node_form(&$form, &$form_state,
   // Set point of contact to current user.
   global $user;
   $form['field_primary_contact'][LANGUAGE_NONE][0]['target_id']['#default_value'] = "$user->name ($user->uid)";
-  // Make street address non-mandatory.
-  $form['field_location'][LANGUAGE_NONE][0]['street_block']['thoroughfare']['#required'] = FALSE;
 
+  // ---- Address stuff ----
   // Ensure the Address requisites are in place.
   if (empty($form_state['build_info']['files']) || !in_array('modules/node/node.pages.inc', $form_state['build_info']['files'])) {
     form_load_include($form_state, 'inc', 'node', 'node.pages');
@@ -119,6 +118,8 @@ function tn_widgets_tweaks_login_register_thanks_node_form(&$form, &$form_state,
     // Mark the form element as required if necessary.
     $element['#required'] = $delta == 0 && $instance['required'];
   }
+  // Make street address non-mandatory.
+  $form['field_location'][LANGUAGE_NONE][0]['street_block']['thoroughfare']['#required'] = FALSE;
 
   // Hide elements.
   $form['field_description']['#access'] = FALSE;
