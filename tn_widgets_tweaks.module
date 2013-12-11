@@ -120,4 +120,5 @@ function tn_widgets_tweaks_login_register_thanks_node_form(&$form, &$form_state,
   $form['field_description']['#access'] = FALSE;
   $form['field_primary_contact']['#access'] = FALSE;
   $form['language']['#access'] = FALSE;
+  $form['additional_settings']['#access'] = FALSE;
 }
