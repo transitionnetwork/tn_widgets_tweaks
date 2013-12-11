@@ -59,6 +59,10 @@ function tn_widgets_tweaks_login_register_thanks_node_form(&$form, &$form_state,
   // Make street address non-mandatory.
   $form['field_location'][LANGUAGE_NONE][0]['street_block']['thoroughfare']['#required'] = FALSE;
 
+  // Ensure the Address requisites are in place.
+  if (empty($form_state['build_info']['files']) || !in_array('modules/node/node.pages.inc', $form_state['build_info']['files'])) {
+    form_load_include($form_state, 'inc', 'node', 'node.pages');
+  }
   // Set country to that of the context passed in -- unbelievably convoluted!
   // Might be a better way, this came from http://drupal.stackexchange.com/a/40831/4543
   // Adapted from addressfield.module/addressfield_field_widget_form().
